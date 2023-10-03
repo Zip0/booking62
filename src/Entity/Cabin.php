@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\CabinRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -34,6 +36,14 @@ class Cabin
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $miniature = null;
+
+    #[ORM\OneToMany(mappedBy: 'cabin_id', targetEntity: Booking::class, orphanRemoval: true)]
+    private Collection $bookings;
+
+    public function __construct()
+    {
+        $this->bookings = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -120,6 +130,36 @@ class Cabin
     public function setMiniature(?string $coordinates): self
     {
         $this->coordinates = $coordinates;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Booking>
+     */
+    public function getBookings(): Collection
+    {
+        return $this->bookings;
+    }
+
+    public function addBooking(Booking $booking): self
+    {
+        if (!$this->bookings->contains($booking)) {
+            $this->bookings->add($booking);
+            $booking->setCabinId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBooking(Booking $booking): self
+    {
+        if ($this->bookings->removeElement($booking)) {
+            // set the owning side to null (unless already changed)
+            if ($booking->getCabinId() === $this) {
+                $booking->setCabinId(null);
+            }
+        }
 
         return $this;
     }
