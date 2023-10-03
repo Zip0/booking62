@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Repository\BookingRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Cabin;
+use App\Entity\Customer;
 
 #[ORM\Entity(repositoryClass: BookingRepository::class)]
 class Booking
