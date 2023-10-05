@@ -10,9 +10,12 @@ use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Booking;
 use App\Entity\Cabin;
 use App\Entity\Customer;
+use App\Entity\PriceModifier;
 use App\Repository\BookingRepository;
 use Symfony\Component\Validator\Constraints as Assert;
 use DateTime;
+use DateInterval;
+use DatePeriod;
 
 #[Route('/api', name: 'api_')]
 class BookingController extends AbstractController
@@ -20,9 +23,6 @@ class BookingController extends AbstractController
     #[Route('/bookings', name: 'booking_index', methods: ['get'])]
     public function index(ManagerRegistry $doctrine): JsonResponse
     {
-
-
-
         $bookings = $doctrine
             ->getRepository(Booking::class)
             ->findAll();
@@ -50,29 +50,26 @@ class BookingController extends AbstractController
     public function create(BookingRepository $bookingRepository, ManagerRegistry $doctrine, Request $request): JsonResponse
     {
         $entityManager = $doctrine->getManager();
-        $cabin = $entityManager->getRepository(Cabin::class)->find($request->request->get('cabin_id'));
-        $customer = $entityManager->getRepository(Customer::class)->find($request->request->get('customer_id'));
+        $cabin_id = $request->request->get('cabin_id');
+        $cabin = $entityManager->getRepository(Cabin::class)->find($cabin_id);
+        $customer_id = $request->request->get('customer_id');
+        $customer = $entityManager->getRepository(Customer::class)->find($customer_id);
         $start = new DateTime($request->request->get('start'));
         $end = new DateTime($request->request->get('end'));
         $now = new DateTime(date("Y-m-d"));
+        $total = (int)0;
 
-        if ($start < $now) {
-            return $this->json('Start date cannot be in the past', 404);
-        }
-        if ($end < $now) {
-            return $this->json('End date cannot be in the past', 404);
-        }
-        if ($end < $start) {
-            return $this->json('End date cannot before start date', 404);
-        }
-        if (!$cabin) {
-            return $this->json('No cabin found for id' . $request->request->get('cabin_id'), 404);
-        }
-        if (!$customer) {
-            return $this->json('No customer found for id' . $request->request->get('customer_id'), 404);
-        }
+        $validationMessage = $this->validateBooking($start, $end, $now, $cabin, $customer, $cabin_id, $customer_id);
+        if ($validationMessage != null) return $validationMessage;
 
         $bookings = $bookingRepository->findCollidingDates($cabin, $start, $end);
+
+        if (!$request->request->get('total')) {
+            $total = $this->calculateTotal($doctrine, $request->request->get('start'), $request->request->get('end'), $cabin->getCustomPrice());
+        } else {
+            $total = $request->request->get('total');
+        }
+
 
         if (!$bookings) {
 
@@ -82,7 +79,7 @@ class BookingController extends AbstractController
             $booking->setStart($start);
             $booking->setEnd($end);
             $booking->setNotes($request->request->get('notes'));
-            $booking->setTotal($request->request->get('total'));
+            $booking->setTotal($total);
 
             $entityManager->persist($booking);
             $entityManager->flush();
@@ -135,30 +132,25 @@ class BookingController extends AbstractController
     {
         $entityManager = $doctrine->getManager();
         $booking = $entityManager->getRepository(Booking::class)->find($id);
-        $cabin = $entityManager->getRepository(Cabin::class)->find($request->request->get('cabin_id'));
-        $customer = $entityManager->getRepository(Customer::class)->find($request->request->get('customer_id'));
+        $cabin_id = $request->request->get('cabin_id');
+        $cabin = $entityManager->getRepository(Cabin::class)->find($cabin_id);
+        $customer_id = $request->request->get('customer_id');
+        $customer = $entityManager->getRepository(Customer::class)->find($customer_id);
         $start = new DateTime($request->request->get('start'));
         $end = new DateTime($request->request->get('end'));
         $now = new DateTime(date("Y-m-d"));
+        $total = (int)0;
 
-        if ($start < $now) {
-            return $this->json('Start date cannot be in the past', 404);
-        }
-        if ($end < $now) {
-            return $this->json('End date cannot be in the past', 404);
-        }
-        if ($end < $start) {
-            return $this->json('End date cannot before start date', 404);
-        }
-        if (!$cabin) {
-            return $this->json('No cabin found for id' . $request->request->get('cabin_id'), 404);
-        }
-        if (!$customer) {
-            return $this->json('No customer found for id' . $request->request->get('customer_id'), 404);
-        }
+        $validationMessage = $this->validateBooking($start, $end, $now, $cabin, $customer, $cabin_id, $customer_id);
+        if ($validationMessage != null) return $validationMessage;
 
         $bookings = $bookingRepository->findCollidingDates($cabin, $start, $end);
 
+        if (!$request->request->get('total')) {
+            $total = $this->calculateTotal($doctrine, $request->request->get('start'), $request->request->get('end'), $cabin->getCustomPrice());
+        } else {
+            $total = $request->request->get('total');
+        }
         if (!$bookings) {
 
             $booking->setCustomerId($customer);
@@ -166,7 +158,7 @@ class BookingController extends AbstractController
             $booking->setStart($start);
             $booking->setEnd($end);
             $booking->setNotes($request->request->get('notes'));
-            $booking->setTotal($request->request->get('total'));
+            $booking->setTotal($total);
 
             $entityManager->flush();
 
@@ -200,5 +192,83 @@ class BookingController extends AbstractController
         $entityManager->flush();
 
         return $this->json('Deleted a booking successfully with id ' . $id);
+    }
+
+    public function validateBooking($start, $end, $now, $cabin, $customer, $cabin_id, $customer_id)
+    {
+        if ($start < $now) {
+            return $this->json('Start date cannot be in the past', 404);
+        }
+        if ($end < $now) {
+            return $this->json('End date cannot be in the past', 404);
+        }
+        if ($end == $start) {
+            return $this->json('Start and end dates cannot be the same', 404);
+        }
+        if ($end < $start) {
+            return $this->json('End date cannot be before start date', 404);
+        }
+        if ($start > $end) {
+            return $this->json('Start date cannot be after end date', 404);
+        }
+        if (!$cabin) {
+            return $this->json('No cabin found for id ' . $cabin_id, 404);
+        }
+        if (!$customer) {
+            return $this->json('No customer found for id ' . $customer_id, 404);
+        }
+        if ($customer->isActive() != 1) {
+            return $this->json('This customer is inactive ' . $customer_id, 404);
+        }
+        if ($cabin->isActive() != 1) {
+            return $this->json('This cabin is inactive ' . $cabin_id, 404);
+        }
+    }
+
+    private function getDatesFromRange($start, $end, $format = 'Y-m-d')
+    {
+
+        $array = array();
+        $interval = new DateInterval('P1D');
+
+        $realEnd = new DateTime($end);
+        $realEnd->add($interval);
+
+        $period = new DatePeriod(new DateTime($start), $interval, $realEnd);
+
+        foreach ($period as $date) {
+            $array[] = $date->format($format);
+        }
+
+        return $array;
+    }
+
+
+    //TODO have a look at this function when not tired
+
+    private function calculateTotal($doctrine, $start, $end, $price)
+    {
+        $total = 0;
+        $entityManager = $doctrine->getManager();
+
+        $bookingDates = $this->getDatesFromRange($start, $end);
+        array_pop($bookingDates);
+
+        foreach ($bookingDates as $date) {
+            //TODO figure out how to solve recurring dates. It must be simple.
+            $priceModifiers = $entityManager->getRepository(PriceModifier::class)->getPriceModifiersForDay($date);
+
+            foreach ($priceModifiers as $priceModifier) {
+                $modifier = $priceModifier->getModifier();
+                if (!$modifier) {
+                    $modifier = 1;
+                }
+                $price = $price * $modifier;
+                $this->$price = $price;
+            }
+
+            $total += $price;
+        }
+        return $total;
     }
 }

@@ -52,15 +52,15 @@ class BookingRepository extends ServiceEntityRepository
                 OR 
                 (b.cabin = :cabin AND 
                 b.end >= :end AND
-                b.end <= :end)')
+                b.end <= :end)'
+            )
             ->setParameter('cabin', $cabin)
             ->setParameter('start', $start)
             ->setParameter('end', $end)
             ->orderBy('b.id', 'ASC')
             //    ->setMaxResults(10)
             ->getQuery()
-            ->getResult()
-            ;
+            ->getResult();
     }
 
 

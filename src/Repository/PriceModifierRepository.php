@@ -39,6 +39,18 @@ class PriceModifierRepository extends ServiceEntityRepository
         }
     }
 
+    public function getPriceModifiersForDay($date): array {
+        return $this->createQueryBuilder('p')
+           ->andWhere('p.start <= :date AND p.end >= :date AND p.active = 1')
+           ->setParameter('date', $date)
+//            ->orderBy('p.id', 'ASC')
+//            ->setMaxResults(10)
+           ->getQuery()
+           ->getResult()
+       ;
+    }
+
+
 //    /**
 //     * @return PriceModifier[] Returns an array of PriceModifier objects
 //     */
