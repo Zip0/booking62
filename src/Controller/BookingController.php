@@ -32,10 +32,8 @@ class BookingController extends AbstractController
         foreach ($bookings as $booking) {
             $data[] = [
                 'booking_id' => $booking->getId(),
-                // 'customer_id' => $booking->getCustomerId(),
                 'customer_name' => $booking->getCustomerId()->getName(),
                 'customer_surname' => $booking->getCustomerId()->getSurname(),
-                // 'cabin_id' => $booking->getCabinId(),
                 'cabin_name' => $booking->getCabinId()->getName(),
                 'start' => $booking->getStart(),
                 'end' => $booking->getEnd(),

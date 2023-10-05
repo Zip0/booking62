@@ -37,7 +37,7 @@ class Cabin
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $miniature = null;
 
-    #[ORM\OneToMany(mappedBy: 'cabin_id', targetEntity: Booking::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'cabin', targetEntity: Booking::class, orphanRemoval: true)]
     private Collection $bookings;
 
     public function __construct()

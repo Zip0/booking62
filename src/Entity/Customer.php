@@ -31,7 +31,7 @@ class Customer
     #[ORM\Column]
     private ?bool $active = null;
 
-    #[ORM\OneToMany(mappedBy: 'customer_id', targetEntity: Booking::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Booking::class, orphanRemoval: true)]
     private Collection $bookings;
 
     public function __construct()
@@ -109,8 +109,6 @@ class Customer
      */
     public function getBookings(): Collection
     {
-        echo 'pingpong';
-        // var_dump($this->bookings);
         return $this->bookings;
     }
 
@@ -127,7 +125,7 @@ class Customer
     public function removeBooking(Booking $booking): self
     {
         if ($this->bookings->removeElement($booking)) {
-            // set the owning side to null (unless already changed)
+            
             if ($booking->getCustomerId() === $this) {
                 $booking->setCustomerId(null);
             }

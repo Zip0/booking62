@@ -8,18 +8,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Customer;
-
-// class CustomerController extends AbstractController
-// {
-//     #[Route('/customer', name: 'app_customer')]
-//     public function index(): JsonResponse
-//     {
-//         return $this->json([
-//             'message' => 'Welcome to your new controller!',
-//             'path' => 'src/Controller/CustomerController.php',
-//         ]);
-//     }
-// }
  
 #[Route('/api', name: 'api_')]
 class CustomerController extends AbstractController
