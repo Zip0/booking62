@@ -39,28 +39,53 @@ class BookingRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Booking[] Returns an array of Booking objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('b')
-//            ->andWhere('b.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('b.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    /**
+     * @return Booking[] Returns bookings that fit the timeframe of the request
+     */
+    public function findCollidingDates($cabin, $start, $end): array
+    {
+        return $this->createQueryBuilder('b')
+            ->andWhere(
+                '(b.cabin = :cabin AND 
+                b.start >= :start AND
+                b.start <= :end) 
+                OR 
+                (b.cabin = :cabin AND 
+                b.end >= :end AND
+                b.end <= :end)')
+            ->setParameter('cabin', $cabin)
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->orderBy('b.id', 'ASC')
+            //    ->setMaxResults(10)
+            ->getQuery()
+            ->getResult()
+            ;
+    }
 
-//    public function findOneBySomeField($value): ?Booking
-//    {
-//        return $this->createQueryBuilder('b')
-//            ->andWhere('b.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+
+    //    /**
+    //     * @return Booking[] Returns an array of Booking objects
+    //     */
+    //    public function findByExampleField($value): array
+    //    {
+    //        return $this->createQueryBuilder('b')
+    //            ->andWhere('b.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->orderBy('b.id', 'ASC')
+    //            ->setMaxResults(10)
+    //            ->getQuery()
+    //            ->getResult()
+    //        ;
+    //    }
+
+    //    public function findOneBySomeField($value): ?Booking
+    //    {
+    //        return $this->createQueryBuilder('b')
+    //            ->andWhere('b.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->getQuery()
+    //            ->getOneOrNullResult()
+    //        ;
+    //    }
 }

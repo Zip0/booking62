@@ -109,6 +109,8 @@ class Customer
      */
     public function getBookings(): Collection
     {
+        echo 'pingpong';
+        // var_dump($this->bookings);
         return $this->bookings;
     }
 
@@ -132,5 +134,11 @@ class Customer
         }
 
         return $this;
+    }
+
+
+    public function __toString()
+    {
+        return  (string)  $this->bookings;
     }
 }

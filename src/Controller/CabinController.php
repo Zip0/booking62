@@ -106,10 +106,13 @@ class CabinController extends AbstractController
         }
    
         $cabin->setName($request->request->get('name'));
-        $cabin->setSurname($request->request->get('surname'));
-        $cabin->setEmail($request->request->get('email'));
-        $cabin->setPhone($request->request->get('phone'));
+        $cabin->setDescription($request->request->get('description'));
+        $cabin->setPriceMultiplier($request->request->get('price_multiplier'));
+        $cabin->setCustomPrice($request->request->get('custom_price'));
         $cabin->setActive($request->request->get('active'));
+        $cabin->setCoordinates($request->request->get('coordinates'));
+        $cabin->setMiniature($request->request->get('miniature'));
+   
         $entityManager->flush();
    
         $data = [

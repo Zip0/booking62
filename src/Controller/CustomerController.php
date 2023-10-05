@@ -143,4 +143,24 @@ class CustomerController extends AbstractController
    
         return $this->json('Deleted a customer successfully with id ' . $id);
     }
+
+
+    #[Route('/customersbookings/{id}', name: 'customer_show_bookings', methods:['get'] )]
+    public function showBookings(ManagerRegistry $doctrine, int $id): JsonResponse
+    {
+        $customer = $doctrine->getRepository(Customer::class)->find($id);
+   
+        if (!$customer) {
+   
+            return $this->json('No customer found for id ' . $id, 404);
+        }
+   
+        $data = [
+            'id' => $customer->getId(),
+            'bookings' => $customer->getBookings($customer->getId()),
+        ];
+           
+        return $this->json($data);
+    }
+ 
 }
