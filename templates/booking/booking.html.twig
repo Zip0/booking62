@@ -3,15 +3,9 @@
 {% block body %}
 <div class="main-container">
     <div class="welcome">
-        <h1>Welcome to Booking62!</h1>
-        <p>Feel free to have a browse of our bespoke cabins!</p>
-        <p>Click a cabin to check availability and book.</p>
+        <h1>Book a stay at {{ cabin.name }}</h1>
     </div>
-
-        {% for cabin in cabins %}
-            {% if cabin.active == 1 %}
-            {# <a href="/api/cabins/{{ cabin.id }}"> #}
-            <a href="/api/cabins/{{ cabin.id }}" class="cabin-details">
+            <div class="cabin-details">
                 <div class="cabin-container">
                     <div class="cabin-image">
                         <img type="image/png" src={% if cabin.miniature == '' %}"/images/default_cabin.jpg"{% else %}"/images/{{ cabin.miniature }}"{% endif %}>
@@ -20,14 +14,12 @@
                         <li>
                             <h3>{{ cabin.name|upper }}</h3>
                             <p>{{ cabin.description}}<p>
-                            <p>Price per night: {{ cabin.customprice }} PLN</p>
+                            <p>Price per night: {{ cabin.customprice }} PLN<p>
+                            
                         </li>
                     </ul>
-
+                            {% include 'map.html.twig' %}
                 </div>
-            </a>
-            {# </a> #}
-            {% endif %}
-        {% endfor %}
+            </div>
 </div>
 {% endblock %}

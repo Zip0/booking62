@@ -13,16 +13,18 @@
         <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;700&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
         {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
-        {% block stylesheets %}
+        {# {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
             <link href="{{ asset('styles/new.css') }}" rel="stylesheet"/>
-        {% endblock %}
+        {% endblock %} #}
 
         {% block javascripts %}
             {{ encore_entry_script_tags('app') }}
         {% endblock %}
     </head>
+    {% include 'header.html.twig' %}
     <body>
         {% block body %}{% endblock %}
     </body>
+    {% include 'footer.html.twig' %}
 </html>

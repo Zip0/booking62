@@ -23,7 +23,6 @@ class HomepageController extends AbstractController
         // $cabins = $cabinController->index($managerRegistry);
         // $bookings = new BookingController->get_;
         return $this->render('homepage/homepage.html.twig', [
-            'title' => 'Booking 62',
             'cabins' => $cabins
         ]);
         // die('Homepage to Booking 62!');
