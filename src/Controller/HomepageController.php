@@ -19,13 +19,16 @@ class HomepageController extends AbstractController
     {
         $entityManager = $doctrine->getManager();
         $cabins = $entityManager->getRepository(Cabin::class)->findAll();
-        // $managerRegistry = new ManagerRegistry;
-        // $cabins = $cabinController->index($managerRegistry);
-        // $bookings = new BookingController->get_;
+
+        foreach ($cabins as $cabin) {
+            if (!file_exists(__DIR__.'/../../public/images/'.$cabin->getMiniature())) {
+                $cabin->setMiniature('');
+            }
+        }
+
         return $this->render('homepage/homepage.html.twig', [
             'cabins' => $cabins
         ]);
-        // die('Homepage to Booking 62!');
     }
 
     #[Route('/', name: 'app_homepage')]

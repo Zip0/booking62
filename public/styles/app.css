@@ -1,6 +1,6 @@
-/* @import '~bootstrap';
+@import '~bootstrap';
 @import '~@fortawesome/fontawesome-free/css/all.css';
-@import '~@fontsource/roboto-condensed'; */
+@import '~@fontsource/roboto-condensed';
 
 body {
     background-color: #182c17;
@@ -38,7 +38,6 @@ ul {
 .cabin-container {
     display: flex;
     background: #25522b;
-    /* background: linear-gradient(180deg, rgba(23,36,44,1) 1%, rgba(34,47,54,1) 97%); */
     border-radius: 5px;
     max-width: 1200px;
 }
@@ -111,8 +110,8 @@ li a:hover {
 }
 
 #map {
-    height: 300px; /* The height is 400 pixels */
-    width: 300px; /* The width is the width of the web page */
+    height: 300px;
+    width: 300px;
 }
 
 .btn-primary {
