@@ -256,6 +256,7 @@ class BookingController extends AbstractController
 
         foreach ($bookingDates as $date) {
             //TODO figure out how to solve recurring dates. It must be simple.
+            //get start and end date, then add to price modifier dates for as long as start and end date lasts
             $priceModifiers = $entityManager->getRepository(PriceModifier::class)->getPriceModifiersForDay($date);
 
             foreach ($priceModifiers as $priceModifier) {
