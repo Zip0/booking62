@@ -124,12 +124,12 @@ class Cabin
 
     public function getMiniature(): ?string
     {
-        return $this->coordinates;
+        return $this->miniature;
     }
 
-    public function setMiniature(?string $coordinates): self
+    public function setMiniature(?string $miniature): self
     {
-        $this->coordinates = $coordinates;
+        $this->miniature = $miniature;
 
         return $this;
     }

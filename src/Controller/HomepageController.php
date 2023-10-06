@@ -6,17 +6,25 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
-use App\Entity\BookingController;
+use Doctrine\Persistence\ManagerRegistry;
+use App\Controller\BookingController;
+use App\Controller\CabinController;
+use App\Entity\Cabin;
 
 class HomepageController extends AbstractController
 {
 
     #[Route('/', name: 'homepage')]
-    public function homepage()
+    public function homepage(ManagerRegistry $doctrine )
     {
+        $entityManager = $doctrine->getManager();
+        $cabins = $entityManager->getRepository(Cabin::class)->findAll();
+        // $managerRegistry = new ManagerRegistry;
+        // $cabins = $cabinController->index($managerRegistry);
         // $bookings = new BookingController->get_;
         return $this->render('homepage/homepage.html.twig', [
-            'title' => 'Booking 62'
+            'title' => 'Booking 62',
+            'cabins' => $cabins
         ]);
         // die('Homepage to Booking 62!');
     }

@@ -1,23 +1,28 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
-        {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
-        {% block stylesheets %}
-            {{ encore_entry_link_tags('app') }}
-        {% endblock %}
+{% extends 'base.html.twig' %}
 
-        {% block javascripts %}
-            {{ encore_entry_script_tags('app') }}
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}
-        
-        <h1>{{ title }}</h1>
+{% block body %}
+{{ title }}
+<div class="main-container">
+{# {{ cabins }} #}
 
-        {% endblock %}
-    </body>
-</html>
+    <ul>
+        {% for cabin in cabins %}
+            {% if cabin.active == 1 %}
+            <div class="cabin-details">
+                <div class="cabin-container">
+                    <div class="cabin-image">
+                        <img type="image/png" src={% if cabin.miniature == '' %}"/images/default_cabin.jpg"{% else %}"/images/{{ cabin.miniature }}"{% endif %}>
+                    </div>
+                    <li>
+                        <h3>{{ cabin.name|upper }}</h3>
+                        <p>{{ cabin.description}}<p>
+                        <p>Price per night: {{ cabin.customprice }} PLN<p>
+                        
+                    </li>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
